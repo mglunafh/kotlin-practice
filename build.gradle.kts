@@ -3,10 +3,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "1.7.21"
     application
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 group = "org.some.project.kotlin"
-version = "1.0-SNAPSHOT"
+version = "1.0"
 
 repositories {
     mavenCentral()
@@ -21,7 +22,7 @@ tasks.test {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.17"
+    kotlinOptions.jvmTarget = "17"
 }
 
 application {
