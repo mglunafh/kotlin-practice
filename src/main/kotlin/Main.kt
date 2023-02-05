@@ -1,7 +1,8 @@
 const val VILLAIN_NAME = "Estragon"
 const val NEW_SECTION = "================"
 fun printPlayerLevel(heroName: String, level: Int) {
-    println("$heroName level: $level")
+    val title = determineTitleLevel(level)
+    println("$title $heroName's level: $level")
 }
 
 fun tavernInteraction(heroName: String) {
@@ -55,9 +56,56 @@ fun getQuestIf(
     println("$heroName returns from her quest.")
 }
 
+fun getQuestWhen(
+    heroName: String,
+    level: Int,
+    hasBefriendedBarbarians: Boolean,
+    hasAngeredBarbarians: Boolean,
+    playerClass: String
+) {
+    println(NEW_SECTION)
+    val quest: String = when (level) {
+        1 -> "Meet mr. Bubbles in the land of the soft things."
+        in 2..5 -> {
+            val canTalkToBarbarians = !hasAngeredBarbarians && (hasBefriendedBarbarians || playerClass == "barbarian")
+            if (canTalkToBarbarians) {
+                "Convince the barbarian lords to call off the invasion."
+            } else {
+                "Save the town from the barbarian invasions."
+            }
+        }
+        6 -> "Locate the enchanted sword."
+        7 -> "Recover the long-lost artifact of creation."
+        8 -> "Defeat $VILLAIN_NAME, bringer of deaths and eater of worlds."
+        else -> "There are no quests right now."
+    }
+    println(quest)
+    println("The time passes...")
+    println("$heroName returns from her quest.")
+}
+
+fun determineTitleLevel(level: Int): String {
+    return when (level) {
+        1 -> "Apprentice"
+        in 2..8 -> "Level $level Warrior"
+        9 -> "Vanquisher of $VILLAIN_NAME"
+        else -> "Distinguished Knight"
+    }
+}
+
+fun determineTitleExp(experience: Int): String {
+    val playerTitle: String = when (val playerLevel = experience / 100 + 1) {
+        1 -> "Apprentice"
+        in 2..8 -> "Level $playerLevel Warrior"
+        9 -> "Vanquisher of $VILLAIN_NAME"
+        else -> "Distinguished Knight"
+    }
+    return playerTitle
+}
+
 fun main(args: Array<String>) {
     val heroName = "Madrigal"
-    var playerLevel = 4
+    var playerLevel = 8
     println("The hero announces her presence in this world. Hero name: $heroName")
     printPlayerLevel(heroName, playerLevel)
 
@@ -68,7 +116,10 @@ fun main(args: Array<String>) {
     val playerClass = "barbarian"
     val hasAngeredBarbarians = true
     getQuestIf(heroName, playerLevel, friendsWithBarbarians, hasAngeredBarbarians, playerClass)
+    playerLevel++
+    printPlayerLevel(heroName, playerLevel)
 
+    getQuestWhen(heroName, playerLevel, friendsWithBarbarians, hasAngeredBarbarians, playerClass)
     playerLevel++
     printPlayerLevel(heroName, playerLevel)
 }
