@@ -2,36 +2,63 @@ const val VILLAIN_NAME = "Estragon"
 const val NEW_SECTION = "================"
 
 fun main(args: Array<String>) {
+
+    `UwU fancy function with KAWAII name`()
+
     val heroName = "Madrigal"
-    var playerLevel = 8
-    println("The hero announces her presence in this world. Hero name: $heroName")
+    var playerLevel = 3
+    println("The hero announces her presence in this world. Hero name: $heroName.")
     printPlayerLevel(heroName, playerLevel)
 
     tavernInteraction(heroName, playerLevel)
     magicMirror(heroName)
 
+    visitBlacksmith(heroName)
+
     println(NEW_SECTION)
     val friendsWithBarbarians = false
     val playerClass = "barbarian"
     val hasAngeredBarbarians = true
-    var quest = getQuestIf(heroName, playerLevel, friendsWithBarbarians, hasAngeredBarbarians, playerClass)
+    val quest = getQuestIf(playerLevel, friendsWithBarbarians, hasAngeredBarbarians, playerClass)
     println(quest)
     println("The time passes...")
     println("$heroName returns from her quest.")
     playerLevel++
     printPlayerLevel(heroName, playerLevel)
 
-    println(NEW_SECTION)
-    quest = getQuestWhen(heroName, playerLevel, friendsWithBarbarians, hasAngeredBarbarians, playerClass)
-    println(quest)
+    approachBountyBoard(heroName, playerLevel)
     println("The time passes...")
     println("$heroName returns from her quest.")
     playerLevel++
     printPlayerLevel(heroName, playerLevel)
 }
 
+private fun visitBlacksmith(heroName: String) {
+    val dagger = forgeItem(
+        material = "bronze",
+        itemName = "dagger",
+    )
+    val ironsword = forgeItem(
+        itemName = "sword",
+        material = "iron",
+        encrustWithJewels = true
+    )
+    println(NEW_SECTION)
+    println("$heroName enters the blacksmith shop.")
+    println("A blacksmith asks: can I help you?")
+    println("$heroName says: May I put an order to forge some equipment? I require $dagger and $ironsword.")
+    println("The blacksmith replies: of course my dear, they will be ready in three days.")
+}
+
+private fun approachBountyBoard(heroName: String, level: Int) {
+    println(NEW_SECTION)
+    val title = determineTitleLevel(level)
+    val quest = getQuestWhen(level, "paladin", hasBefriendedBarbarians = true, hasAngeredBarbarians = false)
+    println("$title $heroName approaches the bounty board. It reads:")
+    println("   $quest")
+}
+
 private fun getQuestIf(
-    heroName: String,
     level: Int,
     hasBefriendedBarbarians: Boolean,
     hasAngeredBarbarians: Boolean,
@@ -59,11 +86,10 @@ private fun getQuestIf(
 }
 
 private fun getQuestWhen(
-    heroName: String,
     level: Int,
+    playerClass: String,
     hasBefriendedBarbarians: Boolean,
-    hasAngeredBarbarians: Boolean,
-    playerClass: String
+    hasAngeredBarbarians: Boolean = false
 ): String {
     val quest: String = when (level) {
         1 -> "Meet mr. Bubbles in the land of the soft things."
@@ -75,6 +101,7 @@ private fun getQuestWhen(
                 "Save the town from the barbarian invasions."
             }
         }
+
         6 -> "Locate the enchanted sword."
         7 -> "Recover the long-lost artifact of creation."
         8 -> "Defeat $VILLAIN_NAME, bringer of deaths and eater of worlds."
@@ -126,4 +153,19 @@ private fun determineTitleExp(experience: Int): String {
         else -> "Distinguished Knight"
     }
     return playerTitle
+}
+
+private fun forgeItem(
+    itemName: String,
+    material: String,
+    encrustWithJewels: Boolean = false
+): String {
+    return if (encrustWithJewels)
+        "$material $itemName, encrusted with jewelry"
+    else
+        "$material $itemName"
+}
+
+private fun `UwU fancy function with KAWAII name`() {
+    println("We somehow got into some function with a pretty funky name!")
 }
