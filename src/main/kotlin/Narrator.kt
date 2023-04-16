@@ -15,44 +15,30 @@ val anotherNarration = { message: String ->
 // declare the lambda with several arguments
 val loudNarration: (String, String) -> String = { message, tone ->
     when (tone) {
-        "excited" ->  {
-            narrationLambda(message)
-        }
-        "sneaky" -> {
-            "$message. The narrator has just blown Madrigal's cover.".uppercase()
-        }
+        "excited" -> { narrationLambda(message) }
+        "sneaky" -> { "$message. The narrator has just blown Madrigal's cover.".uppercase() }
         else -> message.uppercase()
     }
 }
 
-// Currying ?..
 val sneakyNarration: (String) -> String = { loudNarration(it, "sneaky") }
 
 var narrationModifier: (String) -> String = { it }
 
+val moods = arrayOf("loud", "tired", "unsure", "professional", "lazy", "mysterious")
 fun changeNarratorMood() {
-    val mood: String
-    val modifier: (String) -> String
     val random = Random()
-    when (random.nextInt(5)) {
-        1 -> {
-            mood = "loud"
-            modifier = narrationLambda
-        }
-        2 -> {
-            mood = "tired"
-            modifier = { it.lowercase().replace(" ", "... ") }
-        }
-        3 -> {
-            mood = "unsure"
-            modifier = { message -> "$message?"}
-        }
-        else -> {
-            mood = "professional"
-            modifier = { message -> "$message."}
-        }
+    val moodIndex = random.nextInt(moods.size)
+    val mood = moods[moodIndex]
+    narrationModifier = when (mood) {
+        "loud" -> narrationLambda
+        "tired" -> { message -> message.lowercase().replace(" ", "... ") }
+        "unsure" -> { message -> "$message?" }
+        "professional" -> { message -> "$message." }
+        "lazy" -> { message -> message.take(message.length / 2) + "..." }
+        "mysterious" -> { message -> message.replace("i", "1").replace("E", "3").replace("T", "7") }
+        else -> { message -> message }
     }
-    narrationModifier = modifier
     narrate("The narrator begins to feel $mood")
 }
 
@@ -61,7 +47,7 @@ fun narrate(message: String) {
 }
 
 // function which takes function as a parameter with a default value
-fun narrateFancy1(message: String, modifier: (String) -> String = { narrationModifier(it)}) {
+fun narrateFancy1(message: String, modifier: (String) -> String = { narrationModifier(it) }) {
     println(modifier(message))
 }
 
@@ -69,3 +55,10 @@ fun narrateFancy1(message: String, modifier: (String) -> String = { narrationMod
 fun narrateFancy2(message: String, modifier: (String) -> String = narrationModifier) {
     println(modifier(message))
 }
+
+// Function, can be passed using function reference syntax
+fun makeYellow(message: String) = "\u001B[33m$message\u001B[0m"
+
+// Lambdas, can be passed by their names
+val makeGreen = { message: String -> "\u001B[32m$message\u001B[0m" }
+val makeRed = { message: String -> "\u001B[31m$message\u001B[0m" }
