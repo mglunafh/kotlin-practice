@@ -14,10 +14,11 @@ fun main() {
 fun narrate(message: String, modifier: (String) -> String = { msg -> msg }) = println(modifier(message))
 
 fun narrateHero(message: String) = narrate(message, heroSpeech)
+private val heroSpeech: (String) -> String = { "\u001B[34;1m -- $it\u001B[0m"}
 
 fun respond(character: String,
             message: String,
-            modifier: (String) -> String = { msg -> msg }) {
+            modifier: (String) -> String = makeMagenta) {
     val random = Random()
     val responseVerbs = listOf("responds", "answers", "replies", "says")
     val verb = responseVerbs[random.nextInt(responseVerbs.size)]
@@ -25,8 +26,8 @@ fun respond(character: String,
     println("$character ${verb}: ${modifier(message)}")
 }
 
-private val heroSpeech: (String) -> String = { "\u001B[34;1m  -- $it\u001B[0m"}
-
+val makeMagenta = { message: String -> "\u001B[35m$message\u001B[0m" }
+val makeRed = { message: String -> "\u001B[31m$message\u001B[0m" }
 
 private fun promptHeroName(useDefaultName: Boolean = true): String {
     if (useDefaultName)
