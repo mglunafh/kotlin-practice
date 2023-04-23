@@ -63,11 +63,35 @@ fun visitTavern_v2() {
     narrate("$heroName enters '$TAVERN_NAME'.")
     narrate("$heroName sees several patrons here: ${patrons.joinToString()}")
 
-    narrate("There are several items for sale: ${menuItems.joinToString(transform = { name -> "'$name'" })}.")
+//    narrate("There are several items for sale: ${menuItems.joinToString(transform = { name -> "'$name'" })}.")
 //    patrons.forEachIndexed { index, patron -> respond(TAVERN_MASTER, "Greetings, $patron! You are #${index + 1} in the queue with order '${menuItems.random()}'.") }
+    prettyPrintMenu()
+
     repeat(3) {
         placeOrder(patrons.random(), menuItems.random())
     }
+}
+
+fun prettyPrintMenu() {
+    requireNotNull(resourceData)
+    val longestItem = resourceData.maxBy { it.length }
+    val totalLength = longestItem.length
+    val title = " Welcome to $TAVERN_NAME "
+    val titleDiff = totalLength - title.length
+    val leftMargin = titleDiff / 2
+    val rightMargin = (titleDiff + 1) / 2
+    val formattedTitle = "*".repeat(leftMargin) + title + "*".repeat(rightMargin)
+
+    val menuEntries = List(resourceData.size + 1) { ind ->
+        if (ind == 0) {
+            formattedTitle
+        } else {
+            val (_, name, price) = resourceData[ind - 1].split(",")
+            val dotsNumber = totalLength - name.length - price.length
+            "$name${".".repeat(dotsNumber)}$price"
+        }
+    }
+    menuEntries.forEach(::println)
 }
 
 private fun placeOrder(patron: String, menuItem: String) {
