@@ -8,7 +8,10 @@ private const val TAVERN_NAME = "$TAVERN_MASTER's Folly"
 private val menuData = Files.readAllLines(Path.of("data/tavern-menu-data.txt")).toList()
 private val resourceData = object {}.javaClass.getResourceAsStream("/menu.txt")?.bufferedReader()?.readLines()?.toList()
 
-fun visitTavern() {
+private val firstNames = listOf("Alex", "Mordoc", "Sophie", "Taric", "Hasan")
+private val lastNames = listOf("Ironfoot", "Fernsworth", "Baggings", "Downstrider")
+
+fun visitTavern_v1() {
     narrate("$heroName enters '$TAVERN_NAME'.")
     val patrons = mutableListOf("Eli", "Mordoc", "Sophie")
     val vips = mutableListOf<String>()
@@ -44,7 +47,32 @@ fun visitTavern() {
     (vips + patrons).forEachIndexed { ind, visitor -> respond(TAVERN_MASTER, "Good evening, $visitor! You are #${ind + 1}") }
 
     menuData.forEachIndexed { i, data -> println("$i: $data") }
-    resourceData?.forEachIndexed { i, data -> println("resource $i: $data")}
+    resourceData?.forEachIndexed { i, data -> println("resource $i: $data") }
+}
+
+fun visitTavern_v2() {
+    requireNotNull(resourceData)
+    val menuItems = List(resourceData.size) { ind ->
+        val (_, name, _) = resourceData[ind].split(",")
+        name
+    }
+    val patrons = mutableSetOf<String>()
+    while (patrons.size < 10) {
+        patrons.add("${firstNames.random()} ${lastNames.random()}")
+    }
+    narrate("$heroName enters '$TAVERN_NAME'.")
+    narrate("$heroName sees several patrons here: ${patrons.joinToString()}")
+
+    narrate("There are several items for sale: ${menuItems.joinToString(transform = { name -> "'$name'" })}.")
+//    patrons.forEachIndexed { index, patron -> respond(TAVERN_MASTER, "Greetings, $patron! You are #${index + 1} in the queue with order '${menuItems.random()}'.") }
+    repeat(3) {
+        placeOrder(patrons.random(), menuItems.random())
+    }
+}
+
+private fun placeOrder(patron: String, menuItem: String) {
+    narrate("$patron speaks with $TAVERN_MASTER to place an order.")
+    narrate("$TAVERN_MASTER hands $patron '$menuItem'.")
 }
 
 private fun chatAboutPerson(people: List<String>, personName: String): String {
@@ -55,3 +83,33 @@ private fun chatAboutPerson(people: List<String>, personName: String): String {
     }
 }
 
+private fun loopClusterF() {
+    var isTavernOpen = true
+    var isClosingTime = false
+    while (isTavernOpen) {
+        if (isClosingTime) {
+            break
+        }
+        println("Have a grand Time!")
+    }
+
+    // labels inside lambdas, break out of lambda
+    ('a'..'z').forEach letters@{ letter ->
+        if ("gpt".contains(letter)) {
+            return@letters
+        }
+        println(letter)
+    }
+
+    // labels inside lambda return value
+    var someCrazy = label@{n: Int ->
+        var temp = 0
+        for (i in 1..n) {
+            if (temp > n) {
+                return@label temp
+            }
+            temp += i*i
+        }
+        temp
+    }
+}

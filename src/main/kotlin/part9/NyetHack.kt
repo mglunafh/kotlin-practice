@@ -8,7 +8,7 @@ fun main() {
     heroName = promptHeroName()
     val heroTitle = createTitle(heroName)
     narrate("$heroName, $heroTitle, heads to the town square.")
-    visitTavern()
+    visitTavern_v2()
 }
 
 fun narrate(message: String, modifier: (String) -> String = { msg -> msg }) = println(modifier(message))
