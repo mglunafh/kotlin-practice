@@ -1,12 +1,16 @@
 package part9
 
-import java.nio.file.Files
-import java.nio.file.Path
+import java.io.File
 
 private const val TAVERN_MASTER = "Taernyl"
 private const val TAVERN_NAME = "$TAVERN_MASTER's Folly"
-private val menuData = Files.readAllLines(Path.of("data/tavern-menu-data.txt")).toList()
+private val menuData = File("data/tavern-menu-data.txt").readText().split("\n")
 private val resourceData = object {}.javaClass.getResourceAsStream("/menu.txt")?.bufferedReader()?.readLines()?.toList()
+
+private val menuPrices: Map<String, Double> = List(menuData.size) { index ->
+    val (_, name, price) = menuData[index].split(",")
+    name to price.toDouble()
+}.toMap()
 
 private val firstNames = listOf("Alex", "Mordoc", "Sophie", "Taric", "Hasan")
 private val lastNames = listOf("Ironfoot", "Fernsworth", "Baggings", "Downstrider")
@@ -57,8 +61,12 @@ fun visitTavern_v2() {
         name
     }
     val patrons = mutableSetOf<String>()
+    val patronGold = mutableMapOf(TAVERN_MASTER to 86.00, heroName to 4.50)
+
     while (patrons.size < 10) {
-        patrons.add("${firstNames.random()} ${lastNames.random()}")
+        val patronName = "${firstNames.random()} ${lastNames.random()}"
+        patrons += patronName
+        patronGold += patronName to 6.0
     }
     narrate("$heroName enters '$TAVERN_NAME'.")
     narrate("$heroName sees several patrons here: ${patrons.joinToString()}")
@@ -68,8 +76,27 @@ fun visitTavern_v2() {
     prettyPrintMenu()
 
     repeat(3) {
-        placeOrder(patrons.random(), menuItems.random())
+        placeOrder(patrons.random(), menuItems.random(), patronGold)
     }
+    displayMoneyInPeoplePockets(patronGold)
+}
+
+private fun messingWithMaps() {
+    // infix function syntax
+    val patronGold = mapOf(TAVERN_MASTER to 86.00, heroName to 4.50)
+    println(patronGold)
+    // boring syntax
+    val patronGold_v2 = mapOf(TAVERN_MASTER.to(86.00), heroName.to(4.50))
+    // actually a collection of Pair objects
+    val patronGold_v3 = mutableMapOf(Pair(TAVERN_MASTER, 86.00), Pair(heroName, 4.50))
+
+    var heroMoney = patronGold[heroName]        // value or null
+    heroMoney = patronGold.getValue(heroName)   // value or NoSuchElementException
+    heroMoney = patronGold.getOrDefault(heroName, 0.0) // value with the default option
+    heroMoney = patronGold.getOrElse(heroName) { if (heroName == "Jane") 4.0 else 0.0 } // value with an option to generate a default value
+
+    val stolenMoney = patronGold_v3.remove(heroName)
+    require(patronGold_v3[heroName] == null)
 }
 
 fun prettyPrintMenu() {
@@ -94,9 +121,30 @@ fun prettyPrintMenu() {
     menuEntries.forEach(::println)
 }
 
-private fun placeOrder(patron: String, menuItem: String) {
+private fun placeOrder(patron: String, menuItem: String, patronGold: MutableMap<String, Double>) {
     narrate("$patron speaks with $TAVERN_MASTER to place an order.")
-    narrate("$TAVERN_MASTER hands $patron '$menuItem'.")
+    val itemPrice = menuPrices[menuItem]
+    if (itemPrice == null) {
+        respond(TAVERN_MASTER, "Oh sorry bud, we don't serve this here.")
+        return
+    }
+
+    val amountOfPatronMoney = patronGold.getOrDefault(patron, 0.0)
+    if (itemPrice <= amountOfPatronMoney) {
+        narrate("$TAVERN_MASTER hands $patron '$menuItem'.")
+        narrate("$patron pays $TAVERN_MASTER $itemPrice gold.")
+        patronGold[patron] = patronGold.getValue(patron) - itemPrice
+        patronGold[TAVERN_MASTER] = patronGold.getValue(TAVERN_MASTER) + itemPrice
+    } else {
+        respond(TAVERN_MASTER, "You need more coin for '$menuItem', sorry mate.")
+    }
+}
+
+private fun displayMoneyInPeoplePockets(personGold: Map<String, Double>) {
+    // syntax with 'it'
+    personGold.forEach { println("${it.key} has ${it.value} gold.") }
+    // syntax with destructuring
+    personGold.forEach { (name, money) -> println("$name has $money gold.") }
 }
 
 private fun chatAboutPerson(people: List<String>, personName: String): String {
