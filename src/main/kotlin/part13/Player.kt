@@ -67,7 +67,7 @@ class Player(initialName: String,
     }
 
     fun castFireball(numFireballs: Int = 2) {
-        narrate("I summon a glass of Fireball springs into existence (x$numFireballs)!")
+        narrate("I summon a glass of Fireball into existence (x$numFireballs)!")
     }
 
     fun narrate(message: String) {

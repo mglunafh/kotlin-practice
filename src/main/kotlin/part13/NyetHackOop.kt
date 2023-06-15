@@ -3,6 +3,11 @@ package part13
 
 fun main() {
 
+    val sword = Sword("Excalibur")
+    println(sword.name)
+    sword.name = "Gleipnir"
+    println(sword.name)
+
     val heroname = "Madrigal"
     val player = Player(heroname, "Kronstadt", 100, false)
     val sideChar = Player("Jason", healthPoints = 200, hometown = "Jacksonville", isImmortal = false)
@@ -12,6 +17,12 @@ fun main() {
     narrate("${player.name} of ${player.hometown}, ${player.title}, heads to the town square.")
     narrate("${player.name}, $mortality, has ${player.healthPoints} health points and is wielding ${player.weaponName}.")
     player.castFireball()
+
+    val npc = LazyInitNpc("Slammer", "Slamville")
+    val destiny = npc.prophecy
+    narrate("${npc.title}, got his fate sealed: $destiny.")
+    npc.weapon = Weapon("Pick axe")
+    println(npc.title)
 }
 
 fun narrate(message: String, modifier: (String) -> String = { msg -> msg }) = println(modifier(message))
