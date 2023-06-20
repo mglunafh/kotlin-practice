@@ -17,7 +17,7 @@ private val lastNames = listOf("Ironfoot", "Fernsworth", "Baggings", "Downstride
 fun visitTavern() {
     narrate("$heroName enters '$TAVERN_NAME'.")
 
-    val patronGold = mutableMapOf(TAVERN_MASTER to 86.00, part9.heroName to 4.50)
+    val patronGold = mutableMapOf(TAVERN_MASTER to 86.00, heroName to 4.50)
 
     val patrons = firstNames.shuffled().zip(lastNames.shuffled()) { first, last -> "$first $last" }
     patrons.forEach { patronGold[it] = 6.0 }
